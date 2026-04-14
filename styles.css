@@ -39,6 +39,16 @@ body {
   top: 0;
 }
 
+.site-banner {
+  background: #dbeafe;
+  color: #1e3a8a;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #bfdbfe;
+}
+
 .container {
   width: min(1100px, 92vw);
   margin-inline: auto;
