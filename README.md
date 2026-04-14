@@ -1,36 +1,23 @@
 # Northstar Studio Website
 
-This repository now contains a complete static marketing site.
+Professional static marketing site for Northstar Studio.
 
-## Quick preview
-
-Run a local server from the repo root and open the printed URL:
+## Local preview
 
 ```bash
 python -m http.server 4173
 ```
 
-Then visit:
+Then open: `http://localhost:4173`
 
-- `http://localhost:4173/`
+If you still see old content, force refresh:
+- macOS: `Cmd + Shift + R`
+- Windows/Linux: `Ctrl + F5`
 
-## What changed
+## Current version highlights (April 2026)
 
-- New homepage with refined content architecture:
-  - Hero + clear CTA
-  - Services
-  - Results
-  - Trust/Credibility section
-  - FAQ
-  - Contact form
-- Responsive layout + mobile nav
-- SEO metadata + JSON-LD
-- `robots.txt` and `sitemap.xml`
-
-## Files
-
-- `index.html` — semantic page structure and SEO metadata
-- `styles.css` — responsive design system and layout
-- `script.js` — mobile nav toggle and dynamic footer year
-- `robots.txt` + `sitemap.xml` — crawler/indexing helpers
-- `favicon.svg` — site icon
+- Professional white/blue visual system with dark navy and gold accents.
+- New service, process, results, and about/trust sections with more realistic business copy.
+- Reveal-on-scroll animations (with reduced-motion fallback).
+- Responsive navigation and accessible page structure.
+- Basic SEO metadata plus structured data (`ProfessionalService`).
