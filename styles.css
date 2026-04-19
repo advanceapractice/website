@@ -11,7 +11,7 @@
   --gold: #d4a017;
   --gold-soft: #fff4d7;
   --radius: 14px;
-  --shadow: 0 16px 34px rgba(7, 25, 58, 0.08);
+  --shadow: 0 4px 12px rgba(7, 25, 58, 0.06);
 }
 
 * {
@@ -19,7 +19,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 body {
@@ -65,8 +65,7 @@ body {
   top: 0;
   z-index: 25;
   border-bottom: 1px solid var(--line);
-  background: rgba(244, 247, 255, 0.96);
-  backdrop-filter: blur(8px);
+  background: #f4f7ff;
 }
 
 .nav-wrap {
@@ -107,9 +106,7 @@ body {
 
 .hero {
   padding: 5rem 0 3.5rem;
-  background:
-    radial-gradient(880px 360px at 12% -14%, #d8e4ff 0%, transparent 58%),
-    radial-gradient(900px 320px at 94% -25%, #f8e9ba 0%, transparent 56%);
+  background: linear-gradient(180deg, #e8efff 0%, #f4f7ff 70%);
 }
 
 .hero-grid {
@@ -405,32 +402,12 @@ textarea:focus {
   margin-right: 0.8rem;
 }
 
-/* Reveal-on-scroll animation (progressive enhancement).
-   Content is visible by default; JS adds .js-reveal to enable the fade-in. */
-.js-reveal [data-reveal] {
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-.js-reveal [data-reveal].is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+/* Reveal animation removed — was causing blank page + scroll-jank on mobile */
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
   * {
     transition: none !important;
     animation: none !important;
-  }
-
-  .js-reveal [data-reveal] {
-    opacity: 1;
-    transform: none;
   }
 }
 

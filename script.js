@@ -41,22 +41,3 @@ if (yearNode) {
   yearNode.textContent = String(new Date().getFullYear());
 }
 
-const revealElements = document.querySelectorAll('[data-reveal]');
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-if (revealElements.length && !reduceMotion && 'IntersectionObserver' in window) {
-  document.documentElement.classList.add('js-reveal');
-  const observer = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          obs.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.05, rootMargin: '0px 0px 0px 0px' }
-  );
-
-  revealElements.forEach((element) => observer.observe(element));
-}
