@@ -45,6 +45,7 @@ const revealElements = document.querySelectorAll('[data-reveal]');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 if (revealElements.length && !reduceMotion && 'IntersectionObserver' in window) {
+  document.documentElement.classList.add('js-reveal');
   const observer = new IntersectionObserver(
     (entries, obs) => {
       entries.forEach((entry) => {
@@ -54,10 +55,8 @@ if (revealElements.length && !reduceMotion && 'IntersectionObserver' in window) 
         }
       });
     },
-    { threshold: 0.12, rootMargin: '0px 0px -20px 0px' }
+    { threshold: 0.05, rootMargin: '0px 0px 0px 0px' }
   );
 
   revealElements.forEach((element) => observer.observe(element));
-} else {
-  revealElements.forEach((element) => element.classList.add('is-visible'));
 }
