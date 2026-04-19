@@ -3,17 +3,33 @@ const primaryNav = document.querySelector('#primary-nav');
 const yearNode = document.querySelector('#year');
 
 if (menuToggle && primaryNav) {
-  menuToggle.addEventListener('click', () => {
+  const closeNav = () => {
+    primaryNav.classList.remove('open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+  };
+
+  menuToggle.addEventListener('click', (event) => {
+    event.stopPropagation();
     const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
     menuToggle.setAttribute('aria-expanded', String(!expanded));
     primaryNav.classList.toggle('open');
   });
 
   primaryNav.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', () => {
-      primaryNav.classList.remove('open');
-      menuToggle.setAttribute('aria-expanded', 'false');
-    });
+    link.addEventListener('click', closeNav);
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!primaryNav.classList.contains('open')) return;
+    if (primaryNav.contains(event.target) || menuToggle.contains(event.target)) return;
+    closeNav();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && primaryNav.classList.contains('open')) {
+      closeNav();
+      menuToggle.focus();
+    }
   });
 }
 
