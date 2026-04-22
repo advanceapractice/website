@@ -1,0 +1,168 @@
+/* ============================================================
+   Advance a Practice — Additional CSS
+   Paste into: WP Admin → Appearance → Customize → Additional CSS
+   Safe: CSS-only, no theme edits, reversible by deleting the block.
+   ============================================================ */
+
+/* ---------- 1. Fix ghost/outline buttons going dark-on-dark on hover ---------- */
+.btn-ghost:hover,
+.btn-outline:hover,
+.wp-block-button.is-style-outline .wp-block-button__link:hover,
+a.button.outline:hover,
+button.outline:hover {
+  background: #eef3ff !important;
+  color: #0f3fbf !important;
+  box-shadow: 0 10px 20px rgba(29, 78, 216, 0.12);
+}
+
+/* ---------- 2. Stop iOS zoom when focusing form inputs ---------- */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+  font-size: max(1rem, 16px) !important;
+}
+
+/* ---------- 3. Give links and nav items real tap targets (min 44x44) ---------- */
+nav a,
+.menu a,
+.site-footer a,
+.footer a,
+footer a {
+  display: inline-block;
+  padding: 0.5rem 0.6rem;
+  min-height: 44px;
+  line-height: 1.4;
+}
+
+/* ---------- 4. Footer hover state + readable alignment ---------- */
+.site-footer a:hover,
+.site-footer a:focus-visible,
+footer a:hover,
+footer a:focus-visible {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.site-footer .footer-grid,
+.site-footer .wp-block-group,
+footer .footer-grid {
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ---------- 5. Header: prevent mobile menu overlapping hero ---------- */
+@media (max-width: 920px) {
+  header .container,
+  .site-header .container,
+  .nav-wrap {
+    position: relative;
+  }
+
+  /* Common mobile dropdown classes across themes */
+  .primary-nav,
+  .main-navigation ul.menu,
+  nav.mobile-menu,
+  .nav-menu.is-open {
+    top: calc(100% + 6px) !important;
+    right: 0 !important;
+    left: auto !important;
+  }
+}
+
+/* ---------- 6. Tighten section padding on mobile (less dead scroll) ---------- */
+@media (max-width: 920px) {
+  section,
+  .section,
+  .wp-block-group.has-background {
+    padding-top: clamp(2rem, 6vw, 3rem) !important;
+    padding-bottom: clamp(2rem, 6vw, 3rem) !important;
+  }
+
+  .hero,
+  .hero-section,
+  .wp-block-cover {
+    padding-top: clamp(2.5rem, 7vw, 3.5rem) !important;
+    padding-bottom: clamp(2rem, 6vw, 3rem) !important;
+  }
+}
+
+/* ---------- 7. Stop multi-column grids from stacking as a single tall column on tablets ---------- */
+@media (max-width: 920px) and (min-width: 521px) {
+  .logos-row,
+  .trust-row,
+  .partners-row,
+  .wp-block-columns.has-3-columns,
+  .wp-block-columns.has-5-columns {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .logos-row,
+  .trust-row,
+  .partners-row {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Stack CTAs full-width on small mobile so they're easy to tap */
+  .hero-cta .btn,
+  .hero-cta a.button,
+  .wp-block-buttons .wp-block-button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ---------- 8. Fix invalid font-weights (some builders generate 620/650 which browsers round unpredictably) ---------- */
+body,
+.site-banner,
+.primary-nav a,
+.trust-chips li,
+nav a {
+  font-weight: 500;
+}
+
+strong,
+.btn,
+button,
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+}
+
+/* ---------- 9. Prevent horizontal scroll on mobile from wide embeds ---------- */
+html,
+body {
+  overflow-x: hidden;
+}
+
+img,
+iframe,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---------- 10. Accessible focus ring (keyboard users) ---------- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 2px;
+  border-radius: 4px;
+}

@@ -1,0 +1,802 @@
+/*
+ * advanceapractice.com — Additional CSS
+ * Paste into: WP Admin → Appearance → Customize → Additional CSS
+ * Covers: header, logo, nav/mobile menu, footer, page content,
+ *         button hover bugs, mobile layout, iOS zoom, tap targets,
+ *         typography, spacing, color polish.
+ */
+
+/* ==========================================================================
+   GLOBAL RESET HELPERS
+   ========================================================================== */
+
+html, body {
+  overflow-x: hidden;
+}
+
+img, iframe, video, embed {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent iOS Safari from zooming in on form focus */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+  font-size: 16px !important;
+  font-size: max(16px, 1rem) !important;
+}
+
+/* Accessible focus rings */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid #0a7c6e;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY
+   ========================================================================== */
+
+body,
+p,
+li,
+td {
+  font-family: 'Inter', 'Source Sans 3', 'Segoe UI', Helvetica, Arial, sans-serif;
+  color: #0b1c2e;
+  line-height: 1.7;
+}
+
+h1, h2, h3, h4, h5, h6,
+.entry-title,
+.page-title,
+.site-title {
+  font-family: 'Merriweather', 'Georgia', serif;
+  color: #08192c;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+
+h1, .entry-title, .page-title {
+  font-size: clamp(1.85rem, 4vw, 3rem);
+  margin-bottom: 1rem;
+  max-width: 22ch;
+}
+
+h2 {
+  font-size: clamp(1.45rem, 2.8vw, 2.1rem);
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+h3 {
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  margin-top: 0;
+}
+
+p {
+  max-width: 72ch;
+  margin-bottom: 1.15rem;
+}
+
+/* ==========================================================================
+   SITE-WIDE BANNER / TRUST STRIP
+   ========================================================================== */
+
+.site-announcement-bar,
+.top-bar,
+.header-top,
+.announcement-bar {
+  background: linear-gradient(90deg, #08192c, #0a6659);
+  color: #ffffff;
+  text-align: center;
+  padding: 0.55rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.site-announcement-bar a,
+.top-bar a,
+.header-top a {
+  color: #9efae8;
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   HEADER & LOGO
+   ========================================================================== */
+
+.site-header,
+header.site-header,
+#masthead {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 9999 !important;
+  background: rgba(255, 255, 255, 0.97) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid #dde8f0;
+  box-shadow: 0 1px 12px rgba(8, 25, 44, 0.06);
+}
+
+.site-header .container,
+#masthead .container,
+.site-header .site-header-inner,
+.header-inner,
+.nav-wrap {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  min-height: 72px;
+  padding: 0 1.5rem;
+  position: relative;
+  max-width: 1160px;
+  margin-inline: auto;
+}
+
+/* Logo */
+.site-logo,
+.custom-logo-link,
+.site-title,
+.site-branding a,
+a.brand {
+  text-decoration: none !important;
+  color: #08192c !important;
+  font-weight: 800 !important;
+  font-size: 1.2rem;
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+}
+
+.site-logo img,
+.custom-logo,
+.site-branding img {
+  height: 44px;
+  width: auto;
+  display: block;
+}
+
+/* ==========================================================================
+   PRIMARY NAVIGATION — DESKTOP
+   ========================================================================== */
+
+.primary-navigation,
+.main-navigation,
+#primary-nav,
+.site-nav,
+nav.site-navigation {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.primary-navigation ul,
+.main-navigation ul,
+#primary-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.primary-navigation a,
+.main-navigation a,
+#primary-nav a:not(.btn):not(.button) {
+  text-decoration: none;
+  color: #1a2e42;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+  display: inline-block;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.primary-navigation a:hover,
+.primary-navigation a:focus,
+.main-navigation a:hover,
+.main-navigation a:focus,
+#primary-nav a:not(.btn):hover {
+  color: #0a7c6e;
+  background: #f0faf8;
+}
+
+/* Nav CTA button */
+.primary-navigation .nav-cta a,
+.main-navigation .nav-cta a,
+#primary-nav .btn,
+#primary-nav a.button,
+.nav-cta .wp-block-button__link {
+  background: #0a7c6e !important;
+  color: #ffffff !important;
+  border-radius: 8px;
+  padding: 0.55rem 1rem !important;
+  font-weight: 700;
+  font-size: 0.92rem;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.primary-navigation .nav-cta a:hover,
+.main-navigation .nav-cta a:hover,
+#primary-nav .btn:hover,
+#primary-nav a.button:hover,
+.nav-cta .wp-block-button__link:hover {
+  background: #087a60 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(10, 124, 110, 0.28);
+}
+
+/* ==========================================================================
+   MOBILE NAVIGATION
+   ========================================================================== */
+
+@media (max-width: 920px) {
+  /* Ensure the header is the positioning parent for the dropdown */
+  .site-header,
+  #masthead {
+    position: relative !important;
+  }
+
+  /* hamburger button */
+  .menu-toggle,
+  .menu-icon,
+  button[aria-controls*="menu"],
+  button[aria-controls*="nav"],
+  .hamburger {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    background: #fff !important;
+    border: 1px solid #dde8f0 !important;
+    border-radius: 8px !important;
+    cursor: pointer;
+    color: #08192c;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  /* Mobile dropdown panel */
+  .primary-navigation,
+  .main-navigation,
+  #primary-nav {
+    position: absolute !important;
+    top: calc(100% + 4px) !important;
+    right: 1rem !important;
+    left: auto !important;
+    min-width: 220px;
+    background: #fff !important;
+    border: 1px solid #dde8f0;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(8, 25, 44, 0.12);
+    padding: 0.75rem;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.25rem;
+  }
+
+  .primary-navigation ul,
+  .main-navigation ul,
+  #primary-nav ul {
+    flex-direction: column !important;
+    width: 100%;
+  }
+
+  .primary-navigation li,
+  .main-navigation li,
+  #primary-nav li {
+    width: 100%;
+  }
+
+  .primary-navigation a,
+  .main-navigation a,
+  #primary-nav a {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+  }
+
+  /* Keep nav hidden until toggled — theme JS should handle the class */
+  .primary-navigation:not(.is-open):not(.open):not([style*="display: flex"]):not([style*="display:flex"]):not(.toggled),
+  .main-navigation:not(.is-open):not(.open):not(.toggled),
+  #primary-nav:not(.is-open):not(.open):not(.toggled) {
+    display: none !important;
+  }
+
+  .primary-navigation.is-open,
+  .primary-navigation.open,
+  .primary-navigation.toggled,
+  .main-navigation.is-open,
+  .main-navigation.open,
+  .main-navigation.toggled,
+  #primary-nav.is-open,
+  #primary-nav.open,
+  #primary-nav.toggled {
+    display: flex !important;
+  }
+}
+
+/* ==========================================================================
+   BUTTONS — Fix hover making text invisible on ghost/outline variants
+   ========================================================================== */
+
+/* Base CTA style */
+.wp-block-button__link,
+.btn,
+a.button,
+button.button,
+input[type="submit"],
+.elementor-button,
+.et_pb_button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a7c6e;
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 10px;
+  padding: 0.75rem 1.35rem;
+  text-decoration: none !important;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+}
+
+.wp-block-button__link:hover,
+.btn:hover,
+a.button:hover,
+button.button:hover,
+input[type="submit"]:hover,
+.elementor-button:hover,
+.et_pb_button:hover {
+  background: #087a60 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(10, 124, 110, 0.3);
+}
+
+/* Ghost / outline buttons — THE BUG: dark-on-dark on hover */
+.wp-block-button.is-style-outline .wp-block-button__link,
+.btn-ghost,
+.btn-outline,
+a.button.hollow,
+a.button.ghost,
+a.button.secondary {
+  background: transparent !important;
+  color: #0a7c6e !important;
+  border: 2px solid #0a7c6e !important;
+}
+
+.wp-block-button.is-style-outline .wp-block-button__link:hover,
+.btn-ghost:hover,
+.btn-outline:hover,
+a.button.hollow:hover,
+a.button.ghost:hover,
+a.button.secondary:hover {
+  background: #0a7c6e !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(10, 124, 110, 0.25);
+}
+
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
+
+.hero,
+.hero-section,
+.wp-block-cover.hero,
+section.hero,
+.home-hero {
+  padding: clamp(3rem, 7vw, 5.5rem) 0 clamp(2.5rem, 6vw, 4.5rem);
+  background:
+    radial-gradient(900px 400px at 10% -10%, #d0ece8 0%, transparent 60%),
+    radial-gradient(800px 300px at 92% -20%, #dde8f5 0%, transparent 55%),
+    #f5f8ff;
+}
+
+.hero-grid,
+.hero .wp-block-columns,
+.hero .row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+@media (max-width: 920px) {
+  .hero-grid,
+  .hero .wp-block-columns,
+  .hero .row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.eyebrow,
+.pre-title,
+.label-text {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  font-size: 0.78rem;
+  color: #0a7c6e;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* ==========================================================================
+   SECTIONS / PAGE CONTENT
+   ========================================================================== */
+
+.section,
+section.section,
+.wp-block-group,
+.content-section {
+  padding: clamp(3rem, 7vw, 5rem) 0;
+}
+
+.section-alt,
+.wp-block-group.has-light-gray-background-color,
+.section.bg-light {
+  background: #f0f5f3;
+  border-top: 1px solid #d8e8e4;
+  border-bottom: 1px solid #d8e8e4;
+}
+
+.container,
+.wp-block-group > .wp-block-group__inner-container,
+.entry-content > *:not(.alignfull):not(.alignwide) {
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+}
+
+/* Cards */
+.card,
+.service-card,
+.wp-block-column,
+.feature-card {
+  background: #ffffff;
+  border: 1px solid #dde8e6;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(8, 25, 44, 0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover,
+.service-card:hover,
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(8, 25, 44, 0.1);
+}
+
+/* 3-col grid */
+.cards,
+.stats-grid,
+.wp-block-columns.has-3-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 920px) {
+  .cards,
+  .stats-grid,
+  .wp-block-columns.has-3-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .cards,
+  .stats-grid,
+  .wp-block-columns.has-3-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Testimonials / blockquotes */
+blockquote,
+.testimonial,
+.wp-block-quote {
+  background: #ffffff;
+  border: 1px solid #dde8e6;
+  border-top: 4px solid #0a7c6e;
+  border-radius: 14px;
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 8px 24px rgba(8, 25, 44, 0.06);
+  font-size: 1.05rem;
+  color: #1a2e42;
+  margin: 0;
+}
+
+blockquote cite,
+.testimonial cite,
+.wp-block-quote cite {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.88rem;
+  color: #5a7390;
+  font-style: normal;
+}
+
+/* FAQ accordions */
+details,
+.faq-item {
+  background: #ffffff;
+  border: 1px solid #dde8e6;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 4px 12px rgba(8, 25, 44, 0.04);
+  margin-bottom: 0.75rem;
+}
+
+details summary,
+.faq-item summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: #08192c;
+  font-size: 1rem;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+details summary::after {
+  content: '+';
+  font-size: 1.2rem;
+  color: #0a7c6e;
+  flex-shrink: 0;
+}
+
+details[open] summary::after {
+  content: '−';
+}
+
+/* ==========================================================================
+   CONTACT FORM
+   ========================================================================== */
+
+.contact-form,
+.wpcf7-form,
+form.contact {
+  background: #ffffff;
+  border: 1px solid #dde8e6;
+  border-radius: 14px;
+  padding: 1.75rem;
+  box-shadow: 0 8px 24px rgba(8, 25, 44, 0.06);
+}
+
+.contact-form label,
+.wpcf7-form label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #2a4060;
+  margin-bottom: 0.3rem;
+}
+
+.contact-form input,
+.contact-form textarea,
+.contact-form select,
+.wpcf7-form input,
+.wpcf7-form textarea,
+.wpcf7-form select {
+  width: 100%;
+  font-family: inherit;
+  font-size: 16px !important;
+  border: 1px solid #b8cfd8;
+  border-radius: 9px;
+  padding: 0.7rem 0.9rem;
+  background: #fafcfe;
+  color: #08192c;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  margin-bottom: 0.75rem;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus,
+.wpcf7-form input:focus,
+.wpcf7-form textarea:focus {
+  outline: none;
+  border-color: #0a7c6e;
+  box-shadow: 0 0 0 3px rgba(10, 124, 110, 0.12);
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+
+.site-footer,
+footer.site-footer,
+#colophon {
+  background: #08192c !important;
+  color: #c8dce8 !important;
+  padding: 2.5rem 0 1.5rem !important;
+}
+
+.site-footer .container,
+#colophon .container,
+.site-footer .footer-inner,
+.site-footer .wp-block-group__inner-container {
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+}
+
+.site-footer .footer-grid,
+.footer-grid,
+#colophon .wp-block-columns {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+/* Footer nav links */
+.site-footer a,
+#colophon a,
+footer a {
+  color: #a8c8da !important;
+  text-decoration: none !important;
+  padding: 0.4rem 0.55rem;
+  border-radius: 6px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.site-footer a:hover,
+#colophon a:hover,
+footer a:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.site-footer p,
+#colophon p,
+footer p {
+  color: #7a9aae;
+  font-size: 0.88rem;
+  margin: 0;
+  max-width: none;
+}
+
+.site-footer nav,
+#colophon nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+/* Footer trust line */
+.footer-trust,
+.footer-note {
+  text-align: center;
+  color: #5a7a8a !important;
+  font-size: 0.8rem;
+  padding-top: 1.25rem;
+  margin-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ==========================================================================
+   INDUSTRY / LOGO ROW
+   ========================================================================== */
+
+.logos-row,
+.partner-row,
+.industry-row,
+.client-logos {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: center;
+  padding: 1.5rem 0;
+  border-top: 1px solid #dde8e6;
+  border-bottom: 1px solid #dde8e6;
+  background: #fff;
+}
+
+.logos-row span,
+.logos-row p,
+.industry-row span {
+  text-align: center;
+  font-weight: 700;
+  color: #2a4060;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 920px) {
+  .logos-row,
+  .partner-row,
+  .industry-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .logos-row,
+  .partner-row,
+  .industry-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ==========================================================================
+   MOBILE — GLOBAL SPACING & LAYOUT
+   ========================================================================== */
+
+@media (max-width: 920px) {
+  .hero-grid,
+  .split,
+  .two-col,
+  .wp-block-columns:not(.has-3-columns),
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    flex-direction: column !important;
+  }
+
+  h1, .entry-title {
+    font-size: clamp(1.6rem, 6vw, 2.25rem);
+  }
+
+  /* Full-width CTAs on mobile for easier tapping */
+  .hero-cta,
+  .hero .buttons,
+  .hero .wp-block-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-cta .btn,
+  .hero-cta a.button,
+  .hero .wp-block-button {
+    width: 100%;
+    text-align: center !important;
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
