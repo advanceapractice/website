@@ -1,18 +1,22 @@
 const menuToggle = document.querySelector('.menu-toggle');
 const primaryNav = document.querySelector('#primary-nav');
+const menuLabel = menuToggle && menuToggle.querySelector('.menu-toggle-label');
 const yearNode = document.querySelector('#year');
 
 if (menuToggle && primaryNav) {
   const closeNav = () => {
     primaryNav.classList.remove('open');
     menuToggle.setAttribute('aria-expanded', 'false');
+    if (menuLabel) menuLabel.textContent = 'Menu';
   };
 
   menuToggle.addEventListener('click', (event) => {
     event.stopPropagation();
     const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
-    menuToggle.setAttribute('aria-expanded', String(!expanded));
-    primaryNav.classList.toggle('open');
+    const opening = !expanded;
+    menuToggle.setAttribute('aria-expanded', String(opening));
+    primaryNav.classList.toggle('open', opening);
+    if (menuLabel) menuLabel.textContent = opening ? 'Close' : 'Menu';
   });
 
   primaryNav.querySelectorAll('a').forEach((link) => {
