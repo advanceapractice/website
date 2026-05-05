@@ -1,123 +1,117 @@
 <?php
 /**
- * Plugin Name: AAP Mobile Menu Fix v2
- * Description: Position-based close button detection — works regardless of theme class names
+ * Plugin Name: AAP Mobile Menu Fix v3
+ * Description: Tap-zone close — works regardless of theme class names or icon type
  */
-add_action( 'wp_footer', function () {
-    ?>
-    <script id="aap-menu-fix-v2">
-    (function () {
-        var bodyClassAtStart = document.body.className;
+add_action( 'wp_footer', function () { ?>
+<script id="aap-menu-fix-v3">
+(function () {
 
-        /* ── Force-close everything ───────────────────────────────── */
-        function closeAll() {
-            // Remove any body/html classes added after page load
-            var was = (bodyClassAtStart || '').split(/\s+/);
-            document.body.className.split(/\s+/).forEach(function (c) {
-                if (c && was.indexOf(c) < 0) document.body.classList.remove(c);
-            });
-            document.documentElement.className.split(/\s+/).forEach(function (c) {
-                if (c && was.indexOf(c) < 0) document.documentElement.classList.remove(c);
-            });
+  /* ── Snapshot body classes at page load ─────────────────────────── */
+  var startClasses = {};
+  [].forEach.call(document.body.classList, function(c){ startClasses[c]=1; });
 
-            // Strip open/active/show classes from any positioned menu-like panel
-            document.querySelectorAll(
-                'nav, [class*="mobile"], [class*="menu"], [class*="drawer"], ' +
-                '[id*="menu"], [id*="nav"], [id*="popup"]'
-            ).forEach(function (el) {
-                var s = window.getComputedStyle(el);
-                if (s.position !== 'static' && el.offsetWidth > 80) {
-                    el.classList.remove(
-                        'open','is-open','active','is-active',
-                        'show','visible','toggled','expanded','opened'
-                    );
-                    el.setAttribute('aria-hidden', 'true');
-                }
-            });
+  /* ── Force-close: remove added classes + unlock scroll ──────────── */
+  function closeMenu() {
+    // Remove any class added to body after page load
+    [].forEach.call(document.body.classList.slice ? document.body.classList :
+      Array.from(document.body.classList), function(c){
+      if (!startClasses[c]) document.body.classList.remove(c);
+    });
+    // Same for <html>
+    document.documentElement.classList.remove(
+      'menu-open','nav-open','mobile-open','is-menu-open',
+      'mobile-menu-open','mobile-nav-open','menu-is-open'
+    );
+    // Strip state classes from every positioned element
+    document.querySelectorAll('*').forEach(function(el){
+      var s = window.getComputedStyle(el);
+      if (s.position === 'static') return;
+      el.classList.remove(
+        'open','is-open','active','is-active','show',
+        'visible','toggled','expanded','opened','in'
+      );
+      el.setAttribute('aria-hidden','true');
+    });
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    document.body.style.position = '';
+  }
 
-            // Unlock scroll
-            document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
-            document.body.style.height = '';
+  /* ── Find panels: visible, large, fixed/absolute ────────────────── */
+  function getOpenPanels() {
+    var panels = [];
+    document.querySelectorAll('*').forEach(function(el){
+      var s = window.getComputedStyle(el);
+      if (
+        (s.position === 'fixed' || s.position === 'absolute') &&
+        el.offsetWidth  > window.innerWidth  * 0.25 &&
+        el.offsetHeight > window.innerHeight * 0.35 &&
+        s.display !== 'none' &&
+        s.visibility !== 'hidden' &&
+        parseFloat(s.opacity || '1') > 0.1
+      ) panels.push(el);
+    });
+    return panels;
+  }
+
+  /* ── Attach top-zone tap handler to each open panel ─────────────── */
+  var wired = [];
+  function wirePanels() {
+    getOpenPanels().forEach(function(panel){
+      if (wired.indexOf(panel) > -1) return;
+      wired.push(panel);
+
+      panel.addEventListener('click', function(e){
+        var r   = panel.getBoundingClientRect();
+        var top = r.top + Math.min(160, r.height * 0.2); // top 20% or 160px
+
+        // Tap in the top zone of the panel
+        if (e.clientY <= top) {
+          // Don't block nav links inside this zone
+          var node = e.target;
+          while (node && node !== panel) {
+            if (node.tagName === 'A' && node.href &&
+                node.href.replace(/#$/,'') !== window.location.href.replace(/#$/,'')) return;
+            node = node.parentElement;
+          }
+          e.stopPropagation();
+          closeMenu();
         }
+      }, true);
 
-        /* ── Wire close buttons by position, not class name ────────── */
-        var wired = new WeakSet ? new WeakSet() : { has: function(){return false;}, add: function(){} };
-
-        function wirePanelCloseButtons(panel) {
-            var pr = panel.getBoundingClientRect();
-            // Target small elements in the top 140px of the panel
-            panel.querySelectorAll('button, a, span, i, svg, div, [role="button"]')
-                .forEach(function (el) {
-                    try { if (wired.has(el)) return; } catch(e) {}
-                    var er = el.getBoundingClientRect();
-                    var inTopZone   = er.top  < pr.top  + 140;
-                    var isSmall     = el.offsetWidth < 160 && el.offsetHeight < 100;
-                    var notMainLink = (el.tagName !== 'A') || !el.href || el.href === '#';
-                    if (inTopZone && isSmall && notMainLink) {
-                        try { wired.add(el); } catch(e) {}
-                        el.addEventListener('click', function (e) {
-                            e.stopPropagation();
-                            closeAll();
-                        }, true);
-                    }
-                });
-        }
-
-        /* ── Scan for visible panels whenever DOM changes ───────────── */
-        function scanPanels() {
-            document.querySelectorAll(
-                'nav, [class*="mobile"], [class*="menu"], [class*="drawer"], ' +
-                '[class*="popup"], [id*="menu"], [id*="nav"]'
-            ).forEach(function (el) {
-                var s = window.getComputedStyle(el);
-                if (
-                    (s.position === 'fixed' || s.position === 'absolute') &&
-                    el.offsetWidth  > 100 &&
-                    el.offsetHeight > 150 &&
-                    s.display !== 'none' &&
-                    s.visibility !== 'hidden' &&
-                    parseFloat(s.opacity) > 0.1
-                ) {
-                    wirePanelCloseButtons(el);
-                }
-            });
-        }
-
-        new MutationObserver(function () { scanPanels(); })
-            .observe(document.documentElement, {
-                subtree: true,
-                childList: true,
-                attributes: true,
-                attributeFilter: ['class', 'style', 'aria-hidden']
-            });
-
-        /* ── Overlay / backdrop tap closes menu ─────────────────────── */
-        document.addEventListener('click', function (e) {
-            var el = e.target;
-            var s  = window.getComputedStyle(el);
-            // Large full-screen overlay behind the panel
-            if (
-                (s.position === 'fixed' || s.position === 'absolute') &&
-                el.offsetWidth  > window.innerWidth  * 0.4 &&
-                el.offsetHeight > window.innerHeight * 0.5
-            ) {
-                closeAll();
-            }
-        }, false);
-
-        /* ── Escape key ──────────────────────────────────────────────── */
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closeAll();
+      // Also wire any overlay/backdrop sibling
+      var parent = panel.parentElement;
+      if (parent) {
+        [].forEach.call(parent.children, function(sib){
+          if (sib === panel || wired.indexOf(sib) > -1) return;
+          var ss = window.getComputedStyle(sib);
+          if (
+            (ss.position === 'fixed' || ss.position === 'absolute') &&
+            sib.offsetWidth > window.innerWidth * 0.3
+          ) {
+            wired.push(sib);
+            sib.addEventListener('click', function(){ closeMenu(); }, true);
+          }
         });
+      }
+    });
+  }
 
-        // Initial scan after page ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', scanPanels);
-        } else {
-            scanPanels();
-        }
-    })();
-    </script>
-    <?php
-}, 99 );
+  /* ── Watch DOM for menu opening ──────────────────────────────────── */
+  new MutationObserver(wirePanels).observe(document.documentElement, {
+    subtree: true, childList: true,
+    attributes: true, attributeFilter: ['class','style']
+  });
+
+  /* ── Escape key ──────────────────────────────────────────────────── */
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeMenu();
+  });
+
+  /* ── Initial scan ────────────────────────────────────────────────── */
+  wirePanels();
+
+})();
+</script>
+<?php }, 99 );
