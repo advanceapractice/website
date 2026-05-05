@@ -1,0 +1,142 @@
+name: Inspect Live Menu HTML
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["claude/fix-layout-issues-JVbx3"]
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: npx playwright install chromium --with-deps
+
+      - name: Inspect mobile menu DOM
+        run: |
+          cat > inspect.js << 'EOF'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            await page.setViewportSize({ width: 390, height: 844 });
+            await page.goto('https://www.advanceapractice.com', { waitUntil: 'networkidle', timeout: 30000 });
+            await page.waitForTimeout(2000);
+
+            // Find and click the menu toggle
+            const toggles = await page.$$('button, [role="button"], .menu-toggle, .hamburger, [class*="toggle"], [class*="burger"], [class*="mobile"]');
+            let toggled = false;
+            for (const t of toggles) {
+              const box = await t.boundingBox();
+              const vis = await t.isVisible();
+              if (vis && box && box.width < 80 && box.height < 80) {
+                const txt = await t.textContent();
+                const cls = await t.getAttribute('class') || '';
+                console.log('TOGGLE FOUND:', cls, '|', txt?.trim());
+                await t.click();
+                toggled = true;
+                break;
+              }
+            }
+
+            if (!toggled) {
+              // Try clicking anything that looks like a hamburger in the header
+              await page.click('header button, header [role="button"], nav button').catch(() => {});
+            }
+
+            await page.waitForTimeout(1500);
+            await page.screenshot({ path: 'menu-open.png' });
+
+            // Dump all visible fixed/absolute panels
+            const panels = await page.evaluate(() => {
+              const results = [];
+              document.querySelectorAll('*').forEach(el => {
+                const s = window.getComputedStyle(el);
+                if ((s.position === 'fixed' || s.position === 'absolute') &&
+                    el.offsetWidth > 100 && el.offsetHeight > 200 &&
+                    s.display !== 'none' && s.visibility !== 'hidden') {
+                  results.push({
+                    tag: el.tagName,
+                    id: el.id,
+                    className: el.className,
+                    position: s.position,
+                    width: el.offsetWidth,
+                    height: el.offsetHeight,
+                    innerHTML: el.innerHTML.substring(0, 800)
+                  });
+                }
+              });
+              return results;
+            });
+
+            console.log('\n=== VISIBLE PANELS ===');
+            panels.forEach((p, i) => {
+              console.log(`\n--- Panel ${i+1} ---`);
+              console.log('Tag:', p.tag, '| ID:', p.id, '| Class:', p.className);
+              console.log('Size:', p.width, 'x', p.height);
+              console.log('HTML:', p.innerHTML);
+            });
+
+            // Dump body classes
+            const bodyInfo = await page.evaluate(() => ({
+              bodyClass: document.body.className,
+              htmlClass: document.documentElement.className
+            }));
+            console.log('\n=== BODY CLASS ===', bodyInfo.bodyClass);
+            console.log('=== HTML CLASS ===', bodyInfo.htmlClass);
+
+            // Find close button candidates
+            const closeBtns = await page.evaluate(() => {
+              const results = [];
+              document.querySelectorAll('button, a, span, div, i, svg').forEach(el => {
+                const txt = (el.textContent || '').trim();
+                const cls = (el.className || '').toString();
+                const lbl = el.getAttribute('aria-label') || '';
+                if (txt === '×' || txt === '✕' || txt === 'X' || txt === 'x' ||
+                    cls.toLowerCase().includes('close') ||
+                    lbl.toLowerCase().includes('close')) {
+                  const rect = el.getBoundingClientRect();
+                  if (rect.width > 0) {
+                    results.push({
+                      tag: el.tagName,
+                      id: el.id,
+                      className: cls,
+                      text: txt.substring(0, 50),
+                      ariaLabel: lbl,
+                      x: Math.round(rect.x),
+                      y: Math.round(rect.y),
+                      w: Math.round(rect.width),
+                      h: Math.round(rect.height),
+                      html: el.outerHTML.substring(0, 300)
+                    });
+                  }
+                }
+              });
+              return results;
+            });
+
+            console.log('\n=== CLOSE BUTTON CANDIDATES ===');
+            closeBtns.forEach((b, i) => {
+              console.log(`\n-- Candidate ${i+1} --`);
+              console.log('Tag:', b.tag, '| ID:', b.id, '| Class:', b.className);
+              console.log('Text:', b.text, '| Label:', b.ariaLabel);
+              console.log('Position:', b.x, b.y, '| Size:', b.w, 'x', b.h);
+              console.log('HTML:', b.html);
+            });
+
+            await browser.close();
+          })().catch(e => { console.error('ERROR:', e.message); process.exit(1); });
+          EOF
+          node inspect.js
+
+      - name: Upload screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: menu-screenshot
+          path: menu-open.png
