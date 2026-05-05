@@ -1,4 +1,4 @@
-name: Inject Fix via WP Admin Theme Editor
+name: Inject Fix via WP Admin (curl)
 
 on:
   push:
@@ -16,33 +16,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Playwright
-        run: npx playwright install chromium --with-deps 2>&1 | tail -3
-
-      - name: Inject JS fix into functions.php via WP Admin
+      - name: Inject JS fix into functions.php via WP Admin HTTP
         run: |
-          cat > wp-inject.js << 'JSEOF'
-          const { chromium } = require('playwright');
+          python3 << 'PYEOF'
+          import urllib.request, urllib.parse, urllib.error, http.cookiejar, re, os, sys
 
-          const WP   = process.env.WP_URL;
-          const USER = process.env.WP_USER;
-          const PASS = process.env.WP_PASS;
+          WP   = os.environ['WP_URL']
+          USER = os.environ['WP_USER']
+          PASS = os.environ['WP_PASS']
 
-          const FIX_START = '// === AAP_MENU_FIX_START ===';
-          const FIX_END   = '// === AAP_MENU_FIX_END ===';
-          const FIX_CODE  = `
+          FIX = """
 
-${FIX_START}
+// === AAP_MENU_FIX_START ===
 add_action('wp_footer', function() { ?>
 <script id="aap-menu-fix">
 (function(){
   function closeByToggle() {
-    var open = document.querySelector('[aria-expanded="true"]');
-    if (open) { open.click(); return true; }
+    var h = document.querySelector('[aria-expanded="true"]');
+    if (h) { h.click(); return true; }
     return false;
   }
   function closeByClass() {
@@ -61,9 +52,7 @@ add_action('wp_footer', function() { ?>
     document.body.style.overflow = '';
     document.documentElement.style.overflow = '';
   }
-  function closeMenu() {
-    if (!closeByToggle()) closeByClass();
-  }
+  function closeMenu() { if (!closeByToggle()) closeByClass(); }
   var wired = new Set();
   function scan() {
     document.querySelectorAll('*').forEach(function(el){
@@ -107,50 +96,89 @@ add_action('wp_footer', function() { ?>
 })();
 </script>
 <?php }, 99);
-${FIX_END}`;
+// === AAP_MENU_FIX_END ==="""
 
-          (async () => {
-            const browser = await chromium.launch({ args: ['--no-sandbox'] });
-            const page = await browser.newPage();
+          jar  = http.cookiejar.CookieJar()
+          opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+          opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
 
-            console.log('Logging in...');
-            await page.goto(`${WP}/wp-login.php`, { waitUntil: 'load', timeout: 30000 });
-            await page.fill('#user_login', USER);
-            await page.fill('#user_pass', PASS);
-            await page.click('#wp-submit');
-            await page.waitForURL(/wp-admin/, { timeout: 20000 });
-            console.log('Logged in:', page.url());
+          # ── 1. Login ──────────────────────────────────────────
+          print('Logging in...')
+          login_data = urllib.parse.urlencode({
+              'log': USER, 'pwd': PASS,
+              'wp-submit': 'Log In',
+              'redirect_to': '/wp-admin/',
+              'testcookie': '1'
+          }).encode()
+          opener.addheaders += [('Cookie', 'wordpress_test_cookie=WP+Cookie+check')]
+          resp = opener.open(f'{WP}/wp-login.php', login_data, timeout=30)
+          final_url = resp.geturl()
+          print('After login URL:', final_url)
+          if 'wp-admin' not in final_url and 'wp-login' in final_url:
+              body = resp.read().decode('utf-8', errors='ignore')
+              print('Login failed. Page snippet:', body[:300])
+              sys.exit(1)
+          print('Login OK')
 
-            console.log('Opening functions.php...');
-            await page.goto(`${WP}/wp-admin/theme-editor.php?file=functions.php`, { waitUntil: 'load', timeout: 20000 });
+          # ── 2. Fetch theme editor ─────────────────────────────
+          print('Fetching theme editor...')
+          resp = opener.open(f'{WP}/wp-admin/theme-editor.php?file=functions.php', timeout=30)
+          html = resp.read().decode('utf-8', errors='ignore')
+          print('Editor page length:', len(html))
 
-            const textarea = await page.$('#newcontent');
-            if (!textarea) throw new Error('No #newcontent textarea found — Theme Editor may be disabled');
+          # ── 3. Extract nonce ──────────────────────────────────
+          nonce_match = re.search(r'"nonce"\s*:\s*"([a-f0-9]+)"', html) or \
+                        re.search(r'name="_wpnonce"[^>]*value="([^"]+)"', html) or \
+                        re.search(r'wp_nonce["\s]*[=:]["\s]*([a-f0-9]+)', html)
+          if not nonce_match:
+              # Try alternate pattern
+              nonce_match = re.search(r'_wpnonce=([a-f0-9]+)', html)
+          nonce = nonce_match.group(1) if nonce_match else ''
+          print('Nonce:', nonce or '(not found)')
 
-            let content = await textarea.inputValue();
-            console.log('functions.php length:', content.length);
+          # ── 4. Extract current file content ───────────────────
+          content_match = re.search(r'<textarea[^>]+id="newcontent"[^>]*>([\s\S]*?)</textarea>', html)
+          if not content_match:
+              print('ERROR: Could not find #newcontent textarea')
+              print('Page snippet:', html[1000:2000])
+              sys.exit(1)
+          import html as html_module
+          current = html_module.unescape(content_match.group(1))
+          print('Got functions.php, length:', len(current))
 
-            // Remove any previous injection cleanly
-            const re = new RegExp(`\\n${FIX_START}[\\s\\S]*?${FIX_END}`, 'g');
-            content = content.replace(re, '');
+          # ── 5. Remove old fix & append new ────────────────────
+          cleaned = re.sub(r'\n// === AAP_MENU_FIX_START ===[\s\S]*?// === AAP_MENU_FIX_END ===', '', current)
+          new_content = cleaned.rstrip() + FIX
 
-            // Append fresh fix
-            const newContent = content.trimEnd() + FIX_CODE;
-            await textarea.fill(newContent);
+          # ── 6. Get theme/file params from form ────────────────
+          theme_match  = re.search(r'name="theme"[^>]*value="([^"]+)"', html)
+          action_match = re.search(r'name="action"[^>]*value="([^"]*)"', html)
+          theme  = theme_match.group(1)  if theme_match  else ''
+          action = action_match.group(1) if action_match else 'edit-theme-plugin-file'
+          print('Theme:', theme, '| Action:', action)
 
-            console.log('Saving...');
-            await page.click('#submit');
-            await page.waitForLoadState('load', { timeout: 15000 });
+          # ── 7. POST updated file ──────────────────────────────
+          print('Saving functions.php...')
+          post_data = urllib.parse.urlencode({
+              'newcontent': new_content,
+              'action': action,
+              'file': 'functions.php',
+              'theme': theme,
+              '_wpnonce': nonce,
+              '_wp_http_referer': f'/wp-admin/theme-editor.php?file=functions.php&theme={theme}',
+              'submit': 'Update File'
+          }).encode()
+          resp = opener.open(f'{WP}/wp-admin/theme-editor.php', post_data, timeout=30)
+          result = resp.read().decode('utf-8', errors='ignore')
+          print('Save response URL:', resp.geturl())
 
-            const html = await page.content();
-            if (/updated successfully|File edited successfully/i.test(html)) {
-              console.log('SUCCESS — functions.php saved with menu fix.');
-            } else {
-              const snippet = html.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').substring(0,400);
-              console.log('Save response:', snippet);
-            }
-
-            await browser.close();
-          })().catch(e => { console.error('FATAL:', e.message); process.exit(1); });
-          JSEOF
-          node wp-inject.js
+          if re.search(r'updated successfully|File edited successfully|file.*edited', result, re.I):
+              print('SUCCESS: functions.php updated with mobile menu fix.')
+          else:
+              # Look for any error message
+              err = re.search(r'<div[^>]+class="[^"]*error[^"]*"[^>]*>([\s\S]{0,300})', result)
+              if err:
+                  import html as h; print('ERROR:', h.unescape(re.sub('<[^>]+>','',err.group(1))))
+              else:
+                  print('Response snippet:', result[500:1000])
+          PYEOF
