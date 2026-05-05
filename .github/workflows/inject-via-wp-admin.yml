@@ -1,0 +1,156 @@
+name: Inject Fix via WP Admin Theme Editor
+
+on:
+  push:
+    branches: ["claude/fix-layout-issues-JVbx3"]
+  workflow_dispatch:
+
+jobs:
+  inject:
+    runs-on: ubuntu-latest
+    env:
+      WP_URL: "https://www.advanceapractice.com"
+      WP_USER: "dev"
+      WP_PASS: "maHXL1ImgcdU*kZVz5tcXu%i"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: npx playwright install chromium --with-deps 2>&1 | tail -3
+
+      - name: Inject JS fix into functions.php via WP Admin
+        run: |
+          cat > wp-inject.js << 'JSEOF'
+          const { chromium } = require('playwright');
+
+          const WP   = process.env.WP_URL;
+          const USER = process.env.WP_USER;
+          const PASS = process.env.WP_PASS;
+
+          const FIX_START = '// === AAP_MENU_FIX_START ===';
+          const FIX_END   = '// === AAP_MENU_FIX_END ===';
+          const FIX_CODE  = `
+
+${FIX_START}
+add_action('wp_footer', function() { ?>
+<script id="aap-menu-fix">
+(function(){
+  function closeByToggle() {
+    var open = document.querySelector('[aria-expanded="true"]');
+    if (open) { open.click(); return true; }
+    return false;
+  }
+  function closeByClass() {
+    ['menu-open','nav-open','mobile-open','mobile-menu-open','mobile-nav-open',
+     'is-menu-open','overlay-active','js-nav-open','off-canvas-open',
+     'menu-is-open','mobile-menu-active'].forEach(function(c){
+      document.body.classList.remove(c);
+      document.documentElement.classList.remove(c);
+    });
+    document.querySelectorAll('*').forEach(function(el){
+      var s = window.getComputedStyle(el);
+      if (s.position==='static') return;
+      el.classList.remove('open','is-open','active','is-active','show',
+        'visible','toggled','expanded','opened','in');
+    });
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+  }
+  function closeMenu() {
+    if (!closeByToggle()) closeByClass();
+  }
+  var wired = new Set();
+  function scan() {
+    document.querySelectorAll('*').forEach(function(el){
+      if (wired.has(el)) return;
+      var s = window.getComputedStyle(el);
+      if ((s.position==='fixed'||s.position==='absolute') &&
+          el.offsetWidth > window.innerWidth*0.25 &&
+          el.offsetHeight > window.innerHeight*0.35 &&
+          s.display !== 'none' && s.visibility !== 'hidden') {
+        wired.add(el);
+        el.addEventListener('click', function(e){
+          var r = el.getBoundingClientRect();
+          if (e.clientY <= r.top + 180) {
+            var n = e.target;
+            while (n && n !== el) {
+              if (n.tagName==='A' && n.href && !n.href.endsWith('#')) return;
+              n = n.parentElement;
+            }
+            e.stopPropagation();
+            closeMenu();
+          }
+        }, true);
+        if (el.parentElement) {
+          Array.from(el.parentElement.children).forEach(function(sib){
+            if (sib===el || wired.has(sib)) return;
+            var ss = window.getComputedStyle(sib);
+            if ((ss.position==='fixed'||ss.position==='absolute') &&
+                sib.offsetWidth > window.innerWidth*0.2) {
+              wired.add(sib);
+              sib.addEventListener('click', closeMenu, true);
+            }
+          });
+        }
+      }
+    });
+  }
+  new MutationObserver(scan).observe(document.documentElement,
+    {subtree:true,childList:true,attributes:true,attributeFilter:['class','style']});
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeMenu(); });
+  scan();
+})();
+</script>
+<?php }, 99);
+${FIX_END}`;
+
+          (async () => {
+            const browser = await chromium.launch({ args: ['--no-sandbox'] });
+            const page = await browser.newPage();
+
+            console.log('Logging in...');
+            await page.goto(`${WP}/wp-login.php`, { waitUntil: 'load', timeout: 30000 });
+            await page.fill('#user_login', USER);
+            await page.fill('#user_pass', PASS);
+            await page.click('#wp-submit');
+            await page.waitForURL(/wp-admin/, { timeout: 20000 });
+            console.log('Logged in:', page.url());
+
+            console.log('Opening functions.php...');
+            await page.goto(`${WP}/wp-admin/theme-editor.php?file=functions.php`, { waitUntil: 'load', timeout: 20000 });
+
+            const textarea = await page.$('#newcontent');
+            if (!textarea) throw new Error('No #newcontent textarea found — Theme Editor may be disabled');
+
+            let content = await textarea.inputValue();
+            console.log('functions.php length:', content.length);
+
+            // Remove any previous injection cleanly
+            const re = new RegExp(`\\n${FIX_START}[\\s\\S]*?${FIX_END}`, 'g');
+            content = content.replace(re, '');
+
+            // Append fresh fix
+            const newContent = content.trimEnd() + FIX_CODE;
+            await textarea.fill(newContent);
+
+            console.log('Saving...');
+            await page.click('#submit');
+            await page.waitForLoadState('load', { timeout: 15000 });
+
+            const html = await page.content();
+            if (/updated successfully|File edited successfully/i.test(html)) {
+              console.log('SUCCESS — functions.php saved with menu fix.');
+            } else {
+              const snippet = html.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').substring(0,400);
+              console.log('Save response:', snippet);
+            }
+
+            await browser.close();
+          })().catch(e => { console.error('FATAL:', e.message); process.exit(1); });
+          JSEOF
+          node wp-inject.js
