@@ -8,27 +8,18 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      FTP_HOST: "89.117.139.62"
+      FTP_USER: "u734158088"
+      FTP_PASS: "rM4=WjlY&YSvbax;"
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install lftp
-        run: sudo apt-get install -y lftp
-
-      - name: Upload plugin to mu-plugins via FTP
+      - name: Upload aap-menu-fix.php to mu-plugins via FTP
         run: |
-          lftp -c "
-            set ftp:ssl-allow false;
-            set net:timeout 30;
-            set net:max-retries 3;
-            open -u ${{ env.FTP_USER }},${{ env.FTP_PASS }} ftp://${{ env.FTP_HOST }};
-            mkdir -p public_html/wp-content/mu-plugins;
-            put aap-menu-fix.php -o public_html/wp-content/mu-plugins/aap-menu-fix.php;
-            bye
-          "
-        env:
-          FTP_HOST: "89.117.139.62"
-          FTP_USER: "u734158088"
-          FTP_PASS: "rM4=WjlY&YSvbax;"
-
-      - name: Confirm upload
-        run: echo "aap-menu-fix.php uploaded to public_html/wp-content/mu-plugins/"
+          curl --silent --show-error --ftp-create-dirs \
+            --user "$FTP_USER:$FTP_PASS" \
+            "ftp://$FTP_HOST/public_html/wp-content/mu-plugins/aap-menu-fix.php" \
+            --upload-file aap-menu-fix.php
+          echo "Upload complete"
