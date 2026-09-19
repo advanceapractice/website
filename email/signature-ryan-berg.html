@@ -1,28 +1,35 @@
 <!--
   AdvanceAPractice — email signature (Ryan Berg)
 
-  Every image below is referenced by an absolute https:// URL.
+  Every image is referenced by an absolute https:// URL.
   Do NOT paste base64 "data:image/png;base64,..." images into this file.
-  Gmail, Outlook, Outlook.com and Yahoo all refuse to render data: URIs
-  in received mail, which makes the logo and every icon disappear at once.
+  Gmail, Outlook, Outlook.com and Yahoo all refuse to render data: URIs in
+  received mail, which makes the logo and every icon disappear at once. That
+  is exactly what broke the previous signature — see email/README.md.
 
-  Before using this signature, upload these four files to
-  https://advanceapractice.com/wp-content/uploads/2026/09/ and confirm each
-  one opens in a logged-out browser window:
+  The four images are served from this repository at a pinned commit, so the
+  signature works with no upload step and the URLs never move. The repo is
+  public, so Gmail's image proxy can fetch them unauthenticated.
 
-    email/brand/aap-logo-240.png           -> aap-logo-240.png
-    email/brand/aap-icon-linkedin-32.png   -> aap-icon-linkedin-32.png
-    email/brand/aap-icon-google-32.png     -> aap-icon-google-32.png
-    email/brand/aap-icon-instagram-32.png  -> aap-icon-instagram-32.png
+  To move them onto advanceapractice.com later, upload the files in
+  email/brand/ to the WordPress media library and replace this prefix
 
-  If WordPress renames a file on upload (it appends -1, -2 … when the name is
-  already taken), update the matching src below to the name it actually saved.
+    https://raw.githubusercontent.com/advanceapractice/website/70ea400678100e8bb128b2661237361cc257821f/email/brand/
+
+  with the uploads URL, e.g.
+
+    https://advanceapractice.com/wp-content/uploads/2026/09/
+
+  keeping the filenames identical. Then open each new URL in a logged-out
+  browser window to confirm it resolves before switching the signature over.
+  WordPress appends -1, -2 … when a filename is already taken; if it does,
+  match the src to the name it actually saved.
 -->
 <div dir="ltr">
   <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif">
     <tr>
       <td valign="middle" style="padding:0 22px 0 0">
-        <img src="https://advanceapractice.com/wp-content/uploads/2026/09/aap-logo-240.png"
+        <img src="https://raw.githubusercontent.com/advanceapractice/website/70ea400678100e8bb128b2661237361cc257821f/email/brand/aap-logo-240.png"
              width="120" height="98" alt="AdvanceAPractice"
              style="display:block;width:120px;height:98px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#1E3A8A">
       </td>
@@ -62,19 +69,19 @@
               <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse">
                 <tr>
                   <td valign="middle">
-                    <a href="https://www.linkedin.com/in/ryanberg-healthcareops" style="text-decoration:none" target="_blank"><img src="https://advanceapractice.com/wp-content/uploads/2026/09/aap-icon-linkedin-32.png" width="16" height="16" alt="" style="display:block;width:16px;height:16px;border:0;outline:none;-ms-interpolation-mode:bicubic"></a>
+                    <a href="https://www.linkedin.com/in/ryanberg-healthcareops" style="text-decoration:none" target="_blank"><img src="https://raw.githubusercontent.com/advanceapractice/website/70ea400678100e8bb128b2661237361cc257821f/email/brand/aap-icon-linkedin-32.png" width="16" height="16" alt="" style="display:block;width:16px;height:16px;border:0;outline:none;-ms-interpolation-mode:bicubic"></a>
                   </td>
                   <td valign="middle" nowrap style="padding-left:6px;font-family:Arial,Helvetica,sans-serif;font-size:11.5px;line-height:1;white-space:nowrap">
                     <a href="https://www.linkedin.com/in/ryanberg-healthcareops" style="color:#1E3A8A;text-decoration:none;font-weight:bold" target="_blank">LinkedIn</a>
                   </td>
                   <td valign="middle" style="padding-left:18px">
-                    <a href="https://www.google.com/maps?cid=1029578287416936324" style="text-decoration:none" target="_blank"><img src="https://advanceapractice.com/wp-content/uploads/2026/09/aap-icon-google-32.png" width="16" height="16" alt="" style="display:block;width:16px;height:16px;border:0;outline:none;-ms-interpolation-mode:bicubic"></a>
+                    <a href="https://www.google.com/maps?cid=1029578287416936324" style="text-decoration:none" target="_blank"><img src="https://raw.githubusercontent.com/advanceapractice/website/70ea400678100e8bb128b2661237361cc257821f/email/brand/aap-icon-google-32.png" width="16" height="16" alt="" style="display:block;width:16px;height:16px;border:0;outline:none;-ms-interpolation-mode:bicubic"></a>
                   </td>
                   <td valign="middle" nowrap style="padding-left:6px;font-family:Arial,Helvetica,sans-serif;font-size:11.5px;line-height:1;white-space:nowrap">
                     <a href="https://www.google.com/maps?cid=1029578287416936324" style="color:#1E3A8A;text-decoration:none;font-weight:bold" target="_blank">Google</a>
                   </td>
                   <td valign="middle" style="padding-left:18px">
-                    <a href="https://www.instagram.com/advanceapractice" style="text-decoration:none" target="_blank"><img src="https://advanceapractice.com/wp-content/uploads/2026/09/aap-icon-instagram-32.png" width="16" height="16" alt="" style="display:block;width:16px;height:16px;border:0;outline:none;-ms-interpolation-mode:bicubic"></a>
+                    <a href="https://www.instagram.com/advanceapractice" style="text-decoration:none" target="_blank"><img src="https://raw.githubusercontent.com/advanceapractice/website/70ea400678100e8bb128b2661237361cc257821f/email/brand/aap-icon-instagram-32.png" width="16" height="16" alt="" style="display:block;width:16px;height:16px;border:0;outline:none;-ms-interpolation-mode:bicubic"></a>
                   </td>
                   <td valign="middle" nowrap style="padding-left:6px;font-family:Arial,Helvetica,sans-serif;font-size:11.5px;line-height:1;white-space:nowrap">
                     <a href="https://www.instagram.com/advanceapractice" style="color:#1E3A8A;text-decoration:none;font-weight:bold" target="_blank">Instagram</a>

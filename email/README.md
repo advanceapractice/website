@@ -44,26 +44,41 @@ the exact artwork already in use — nothing was redrawn.
 
 All four are 2× the displayed size so they stay sharp on retina screens.
 
-### Deploying it
+### Where the images are served from
 
-1. Upload the four files in `brand/` to the WordPress media library, targeting
-   `https://advanceapractice.com/wp-content/uploads/2026/09/`.
-2. Open each URL in a logged-out / private browser window. If any one 404s, the signature
-   will look broken again. WordPress appends `-1`, `-2` … when a filename is already taken —
-   if that happens, update the matching `src` in `signature-ryan-berg.html`.
-3. Gmail → Settings → See all settings → General → Signature. Select the whole existing
-   signature and delete it. Open `signature-ryan-berg.html` in a browser, select the rendered
-   signature, copy, and paste into the Gmail signature box. Save Changes.
-4. Send a test to a non-Apple client — a Gmail address and an Outlook address — and confirm
-   the logo and all three icons appear.
+The signature points at this repository, at a pinned commit:
 
-Pasting from a browser rather than pasting the raw HTML matters: pasting source text into the
-Gmail box makes Gmail escape it and render the markup as visible text.
+```
+https://raw.githubusercontent.com/advanceapractice/website/70ea4006.../email/brand/
+```
 
-**No-hosting alternative.** Gmail's signature editor has *Insert image → Upload*. Images added
-that way are hosted by Google and render reliably. It is a fine fallback if the WordPress
-upload is inconvenient, though it gives less control over exact dimensions and does not help
-any email the Command Suite sends.
+This needs no upload and no hosting setup. The repository is public, so Gmail's image proxy
+can fetch the files unauthenticated, and pinning to a commit SHA rather than a branch means
+the URLs keep working even after the branch is deleted — GitHub keeps a pull request's head
+commit reachable permanently.
+
+Verified from here: each URL returns `200` with `content-type: image/png`, and all four load
+and decode at their intended dimensions when the signature is rendered in Chromium.
+
+**Moving them onto advanceapractice.com later** is a single find-and-replace. Upload the files
+in `brand/` to the WordPress media library, then swap the prefix above for
+`https://advanceapractice.com/wp-content/uploads/2026/09/`, keeping the filenames identical.
+Open each new URL in a logged-out window before switching over. WordPress appends `-1`, `-2` …
+to a filename that is already taken; if it does, match the `src` to what it actually saved.
+Worth doing eventually — your own domain is the better permanent home for brand assets, and
+`raw.githubusercontent.com` is not intended as a production CDN — but nothing is broken until
+then.
+
+### Installing it in Gmail
+
+1. Gmail → Settings → See all settings → General → Signature.
+2. Select the whole existing signature and delete it.
+3. Paste the new one and click **Save Changes**.
+4. Send a test to a non-Apple client — a Gmail address and an Outlook address — and confirm the
+   logo and all three icons appear.
+
+Paste the *rendered* signature, not the file's source text. Pasting HTML source into the Gmail
+box makes Gmail escape it and display the markup as visible text.
 
 ## Rules for any AdvanceAPractice email
 
