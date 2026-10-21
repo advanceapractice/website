@@ -35,6 +35,14 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
 
+    <!-- Reveal-on-scroll bootstrap: marks the document as JS-enabled before
+         first paint so styles.css only hides [data-reveal] content when JS is
+         actually running. Without this, blocked/failed JS leaves sections
+         (About, Services, Contact, …) rendering as empty containers. -->
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -282,6 +290,9 @@
       </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script
+      src="script.js"
+      onerror="document.querySelectorAll('[data-reveal]').forEach(function (el) { el.classList.add('is-visible'); });"
+    ></script>
   </body>
 </html>
