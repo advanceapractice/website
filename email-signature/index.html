@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>AAP Email Signature</title>
+    <style>
+      :root {
+        --bg: #f4f7ff;
+        --surface: #ffffff;
+        --text: #0b1f3a;
+        --muted: #44556f;
+        --line: #d7e2f1;
+        --navy: #0a2545;
+        --gold: #d4a017;
+        --gold-soft: #fff4d7;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 32px 16px 64px;
+        font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: var(--text);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap { max-width: 720px; margin: 0 auto; }
+      h1 { font-size: 1.4rem; margin: 0 0 4px; color: var(--navy); }
+      .lede { margin: 0 0 24px; color: var(--muted); }
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+      label { display: grid; gap: 4px; font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+      input {
+        width: 100%;
+        min-width: 0;
+        font: inherit;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--text);
+        background: #fff;
+      }
+      .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; align-items: center; }
+      button {
+        font: inherit;
+        font-weight: 600;
+        padding: 9px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--navy);
+        background: var(--navy);
+        color: #fff;
+        cursor: pointer;
+      }
+      button.secondary { background: #fff; color: var(--navy); }
+      .status { font-size: 0.9rem; color: var(--muted); min-height: 1.2em; }
+      .preview-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+      ol { margin: 0; padding-left: 20px; }
+      li { margin-bottom: 6px; }
+      .note { font-size: 0.85rem; color: var(--muted); margin-top: 12px; }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>AdvanceAPractice email signature</h1>
+      <p class="lede">Fill in your details, copy the signature, and paste it into your email client's signature settings.</p>
+
+      <section class="panel" aria-labelledby="details-heading">
+        <p class="preview-label" id="details-heading">Your details</p>
+        <div class="fields">
+          <label>Full name <input id="f-name" type="text" autocomplete="name" placeholder="Jane Smith" /></label>
+          <label>Title <input id="f-title" type="text" autocomplete="organization-title" placeholder="Credentialing Specialist" /></label>
+          <label>Direct phone (optional) <input id="f-phone" type="tel" autocomplete="tel" placeholder="(555) 555-5555" /></label>
+          <label>Email <input id="f-email" type="email" autocomplete="email" placeholder="info@advanceapractice.com" /></label>
+        </div>
+        <div class="actions">
+          <button type="button" id="copy-rich">Copy signature</button>
+          <button type="button" class="secondary" id="copy-text">Copy plain-text version</button>
+          <span class="status" id="status" role="status" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="preview-heading">
+        <p class="preview-label" id="preview-heading">Preview</p>
+        <!-- SIGNATURE START: email-safe markup (tables + inline styles only) -->
+        <div id="signature">
+          <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;max-width:600px;font-family:Arial,Helvetica,sans-serif;color:#0b1f3a;">
+            <tr>
+              <td style="padding:0 0 10px 0;border-bottom:2px solid #d4a017;">
+                <div data-sig="name" style="font-size:15px;font-weight:bold;color:#0a2545;line-height:1.4;">Your Name</div>
+                <div data-sig="title" style="font-size:13px;color:#44556f;line-height:1.4;">Your Title</div>
+                <div style="font-size:13px;font-weight:bold;color:#0a2545;line-height:1.4;padding-top:2px;">AdvanceAPractice Management</div>
+                <div style="font-size:12px;color:#44556f;line-height:1.5;padding-top:4px;">
+                  <span data-sig="phone-wrap" style="display:none;"><span data-sig="phone"></span>&nbsp;&nbsp;|&nbsp;&nbsp;</span><a data-sig="email" href="mailto:info@advanceapractice.com" style="color:#1d4ed8;text-decoration:none;">info@advanceapractice.com</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="https://advanceapractice.com" style="color:#1d4ed8;text-decoration:none;">AdvanceAPractice.com</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:12px 0 0 0;">
+                <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;width:100%;">
+                  <tr>
+                    <td style="background:#fff4d7;border-left:3px solid #d4a017;padding:8px 10px;font-size:12px;line-height:1.5;color:#0b1f3a;">
+                      <strong>Written by people, polished with AI.</strong> We use AI tools to help draft and refine some of our messages, and a member of our team reviews each one before it goes out. If something reads a little off, thank you for your patience. Just reply and we'll make it right. We're growing with technology the same way we help our practices grow.
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:10px 0 0 0;font-size:10px;line-height:1.45;color:#6b7a90;">
+                <strong>CONFIDENTIALITY NOTICE:</strong> This email and any attachments are intended only for the named recipient(s) and may contain confidential, privileged, or protected health information (PHI) protected under HIPAA and other applicable federal and state law. If you received this message in error, please notify the sender immediately by reply email or at <a href="mailto:info@advanceapractice.com" style="color:#6b7a90;">info@advanceapractice.com</a>, then permanently delete or destroy all copies, including attachments and printouts. Any unauthorized review, use, disclosure, copying, or distribution is strictly prohibited.
+              </td>
+            </tr>
+          </table>
+        </div>
+        <!-- SIGNATURE END -->
+      </section>
+
+      <section class="panel" aria-labelledby="install-heading">
+        <p class="preview-label" id="install-heading">Install it</p>
+        <ol>
+          <li><strong>Gmail / Google Workspace:</strong> Settings (gear) → See all settings → General → Signature → Create new → paste → Save Changes at the bottom.</li>
+          <li><strong>Outlook (web / new Outlook):</strong> Settings → Accounts → Signatures → New signature → paste → Save.</li>
+          <li><strong>Apple Mail:</strong> Mail → Settings → Signatures → + → paste. Uncheck “Always match my default message font” so the formatting is kept.</li>
+          <li><strong>Phone apps or plain-text email:</strong> use “Copy plain-text version.”</li>
+        </ol>
+        <p class="note">An email disclaimer doesn't make email secure. Send PHI only through encrypted email or a secure portal, and send the minimum necessary.</p>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        var DEFAULT_EMAIL = "info@advanceapractice.com";
+        var sig = document.getElementById("signature");
+        var q = function (k) { return sig.querySelector('[data-sig="' + k + '"]'); };
+        var inputs = {
+          name: document.getElementById("f-name"),
+          title: document.getElementById("f-title"),
+          phone: document.getElementById("f-phone"),
+          email: document.getElementById("f-email"),
+        };
+        var status = document.getElementById("status");
+        var STORE_KEY = "aap-signature-fields";
+
+        function load() {
+          try {
+            var saved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+            Object.keys(inputs).forEach(function (k) { if (saved[k]) inputs[k].value = saved[k]; });
+          } catch (e) { /* storage unavailable: start blank */ }
+        }
+        function save() {
+          try {
+            var data = {};
+            Object.keys(inputs).forEach(function (k) { data[k] = inputs[k].value; });
+            localStorage.setItem(STORE_KEY, JSON.stringify(data));
+          } catch (e) { /* ignore */ }
+        }
+
+        function render() {
+          var name = inputs.name.value.trim();
+          var title = inputs.title.value.trim();
+          var phone = inputs.phone.value.trim();
+          var email = inputs.email.value.trim() || DEFAULT_EMAIL;
+          q("name").textContent = name || "Your Name";
+          q("title").textContent = title || "Your Title";
+          q("title").style.display = title || !name ? "" : "none";
+          q("phone").textContent = phone;
+          q("phone-wrap").style.display = phone ? "" : "none";
+          q("email").textContent = email;
+          q("email").setAttribute("href", "mailto:" + email);
+        }
+
+        // Clean copy: drop hidden pieces and helper attributes so the pasted
+        // signature contains only what the recipient should see.
+        function cleanHtml() {
+          var clone = sig.cloneNode(true);
+          clone.querySelectorAll('[style*="display:none"], [style*="display: none"]').forEach(function (el) { el.remove(); });
+          clone.querySelectorAll("[data-sig]").forEach(function (el) { el.removeAttribute("data-sig"); });
+          return clone.innerHTML.trim();
+        }
+
+        function plainText() {
+          var name = inputs.name.value.trim() || "Your Name";
+          var title = inputs.title.value.trim();
+          var phone = inputs.phone.value.trim();
+          var email = inputs.email.value.trim() || DEFAULT_EMAIL;
+          var contact = [phone, email, "AdvanceAPractice.com"].filter(Boolean).join(" | ");
+          return [
+            "--",
+            name,
+            title,
+            "AdvanceAPractice Management",
+            contact,
+            "",
+            "WRITTEN BY PEOPLE, POLISHED WITH AI. We use AI tools to help draft and refine some of our messages, and a member of our team reviews each one before it goes out. If something reads a little off, thank you for your patience. Just reply and we'll make it right. We're growing with technology the same way we help our practices grow.",
+            "",
+            "CONFIDENTIALITY NOTICE: This email and any attachments are intended only for the named recipient(s) and may contain confidential, privileged, or protected health information (PHI) protected under HIPAA and other applicable federal and state law. If you received this message in error, please notify the sender immediately by reply email or at info@advanceapractice.com, then permanently delete or destroy all copies, including attachments and printouts. Any unauthorized review, use, disclosure, copying, or distribution is strictly prohibited.",
+          ].filter(function (line, i) { return line !== "" || i > 4; }).join("\n");
+        }
+
+        function flash(msg) {
+          status.textContent = msg;
+          clearTimeout(flash.t);
+          flash.t = setTimeout(function () { status.textContent = ""; }, 4000);
+        }
+
+        function selectionFallback() {
+          var range = document.createRange();
+          range.selectNodeContents(sig);
+          var sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+          var ok = false;
+          try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+          sel.removeAllRanges();
+          return ok;
+        }
+
+        async function copyRich() {
+          var html = cleanHtml();
+          var text = plainText();
+          try {
+            if (navigator.clipboard && window.ClipboardItem) {
+              await navigator.clipboard.write([
+                new ClipboardItem({
+                  "text/html": new Blob([html], { type: "text/html" }),
+                  "text/plain": new Blob([text], { type: "text/plain" }),
+                }),
+              ]);
+              flash("Signature copied. Paste it into your email signature settings.");
+              return;
+            }
+          } catch (e) { /* fall through */ }
+          flash(selectionFallback()
+            ? "Signature copied. Paste it into your email signature settings."
+            : "Couldn't copy automatically. Select the preview and press Ctrl/Cmd+C.");
+        }
+
+        async function copyText() {
+          var text = plainText();
+          try {
+            await navigator.clipboard.writeText(text);
+            flash("Plain-text signature copied.");
+          } catch (e) {
+            var ta = document.createElement("textarea");
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            var ok = false;
+            try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
+            ta.remove();
+            flash(ok ? "Plain-text signature copied." : "Couldn't copy automatically.");
+          }
+        }
+
+        Object.keys(inputs).forEach(function (k) {
+          inputs[k].addEventListener("input", function () { render(); save(); });
+        });
+        document.getElementById("copy-rich").addEventListener("click", copyRich);
+        document.getElementById("copy-text").addEventListener("click", copyText);
+        load();
+        render();
+      })();
+    </script>
+  </body>
+</html>
