@@ -15,11 +15,29 @@
         --navy: #0a2545;
         --gold: #d4a017;
         --gold-soft: #fff4d7;
+        --field: #ffffff;
+        --paper: #ffffff;
+        --btn-fg: #ffffff;
+        --btn-alt-bg: #ffffff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0c1626; --surface: #13213a; --text: #e6edf8; --muted: #a3b2c9; --line: #26395a;
+          --navy: #f0c445; --gold: #d4a017; --gold-soft: #2a2410; --field: #0f1b30;
+          --paper: #ffffff; --btn-fg: #0c1626; --btn-alt-bg: transparent; color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0c1626; --surface: #13213a; --text: #e6edf8; --muted: #a3b2c9; --line: #26395a;
+        --navy: #f0c445; --gold: #d4a017; --gold-soft: #2a2410; --field: #0f1b30;
+        --paper: #ffffff; --btn-fg: #0c1626; --btn-alt-bg: transparent; color-scheme: dark;
       }
       * { box-sizing: border-box; }
       body {
         margin: 0;
-        padding: 32px 16px 64px;
+        padding-block: 32px 64px;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
         font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         color: var(--text);
         background: var(--bg);
@@ -45,8 +63,9 @@
         border: 1px solid var(--line);
         border-radius: 8px;
         color: var(--text);
-        background: #fff;
+        background: var(--field);
       }
+      input:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
       .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; align-items: center; }
       button {
         font: inherit;
@@ -55,10 +74,11 @@
         border-radius: 8px;
         border: 1px solid var(--navy);
         background: var(--navy);
-        color: #fff;
+        color: var(--btn-fg);
         cursor: pointer;
       }
-      button.secondary { background: #fff; color: var(--navy); }
+      button.secondary { background: var(--btn-alt-bg); color: var(--navy); }
+      .paper { background: var(--paper); border-radius: 8px; padding: 16px; overflow-x: auto; }
       .status { font-size: 0.9rem; color: var(--muted); min-height: 1.2em; }
       .preview-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
       ol { margin: 0; padding-left: 20px; }
@@ -69,7 +89,7 @@
   <body>
     <main class="wrap">
       <h1>AdvanceAPractice email signature</h1>
-      <p class="lede">Fill in your details, copy the signature, and paste it into your email client's signature settings.</p>
+      <p class="lede">Fill in your details, copy the signature, and paste it into your email client's signature settings. Already have a signature you like? Use <strong>Copy notices only</strong> and paste the two notices right below it.</p>
 
       <section class="panel" aria-labelledby="details-heading">
         <p class="preview-label" id="details-heading">Your details</p>
@@ -80,7 +100,8 @@
           <label>Email <input id="f-email" type="email" autocomplete="email" placeholder="info@advanceapractice.com" /></label>
         </div>
         <div class="actions">
-          <button type="button" id="copy-rich">Copy signature</button>
+          <button type="button" id="copy-rich">Copy full signature</button>
+          <button type="button" class="secondary" id="copy-notices">Copy notices only</button>
           <button type="button" class="secondary" id="copy-text">Copy plain-text version</button>
           <span class="status" id="status" role="status" aria-live="polite"></span>
         </div>
@@ -89,9 +110,9 @@
       <section class="panel" aria-labelledby="preview-heading">
         <p class="preview-label" id="preview-heading">Preview</p>
         <!-- SIGNATURE START: email-safe markup (tables + inline styles only) -->
-        <div id="signature">
+        <div class="paper"><div id="signature">
           <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;max-width:600px;font-family:Arial,Helvetica,sans-serif;color:#0b1f3a;">
-            <tr>
+            <tr data-part="contact">
               <td style="padding:0 0 10px 0;border-bottom:2px solid #d4a017;">
                 <div data-sig="name" style="font-size:15px;font-weight:bold;color:#0a2545;line-height:1.4;">Your Name</div>
                 <div data-sig="title" style="font-size:13px;color:#44556f;line-height:1.4;">Your Title</div>
@@ -118,17 +139,18 @@
               </td>
             </tr>
           </table>
-        </div>
+        </div></div>
         <!-- SIGNATURE END -->
       </section>
 
       <section class="panel" aria-labelledby="install-heading">
         <p class="preview-label" id="install-heading">Install it</p>
         <ol>
+          <li><strong>Adding the notices under your current signature:</strong> click <strong>Copy notices only</strong>, open your signature settings (below), click at the very end of your existing signature, press Enter once, paste, and save.</li>
           <li><strong>Gmail / Google Workspace:</strong> Settings (gear) → See all settings → General → Signature → Create new → paste → Save Changes at the bottom.</li>
           <li><strong>Outlook (web / new Outlook):</strong> Settings → Accounts → Signatures → New signature → paste → Save.</li>
           <li><strong>Apple Mail:</strong> Mail → Settings → Signatures → + → paste. Uncheck “Always match my default message font” so the formatting is kept.</li>
-          <li><strong>Phone apps or plain-text email:</strong> use “Copy plain-text version.”</li>
+          <li><strong>Phone apps or plain-text email:</strong> use “Copy plain-text version.” Each phone app keeps its own signature, separate from your desktop one.</li>
         </ol>
         <p class="note">An email disclaimer doesn't make email secure. Send PHI only through encrypted email or a secure portal, and send the minimum necessary.</p>
       </section>
@@ -178,14 +200,24 @@
 
         // Clean copy: drop hidden pieces and helper attributes so the pasted
         // signature contains only what the recipient should see.
-        function cleanHtml() {
+        function cleanHtml(noticesOnly) {
           var clone = sig.cloneNode(true);
+          if (noticesOnly) {
+            clone.querySelectorAll('[data-part="contact"]').forEach(function (el) { el.remove(); });
+            // first remaining cell no longer needs the top gap
+            var first = clone.querySelector("td");
+            if (first) first.style.paddingTop = "8px";
+          }
           clone.querySelectorAll('[style*="display:none"], [style*="display: none"]').forEach(function (el) { el.remove(); });
           clone.querySelectorAll("[data-sig]").forEach(function (el) { el.removeAttribute("data-sig"); });
           return clone.innerHTML.trim();
         }
 
-        function plainText() {
+        var AI_TEXT = "WRITTEN BY PEOPLE, POLISHED WITH AI. We use AI tools to help draft and refine some of our messages, and a member of our team reviews each one before it goes out. If something reads a little off, thank you for your patience. Just reply and we'll make it right. We're growing with technology the same way we help our practices grow.";
+        var CONF_TEXT = "CONFIDENTIALITY NOTICE: This email and any attachments are intended only for the named recipient(s) and may contain confidential, privileged, or protected health information (PHI) protected under HIPAA and other applicable federal and state law. If you received this message in error, please notify the sender immediately by reply email or at info@advanceapractice.com, then permanently delete or destroy all copies, including attachments and printouts. Any unauthorized review, use, disclosure, copying, or distribution is strictly prohibited.";
+
+        function plainText(noticesOnly) {
+          if (noticesOnly) return AI_TEXT + "\n\n" + CONF_TEXT;
           var name = inputs.name.value.trim() || "Your Name";
           var title = inputs.title.value.trim();
           var phone = inputs.phone.value.trim();
@@ -198,9 +230,9 @@
             "AdvanceAPractice Management",
             contact,
             "",
-            "WRITTEN BY PEOPLE, POLISHED WITH AI. We use AI tools to help draft and refine some of our messages, and a member of our team reviews each one before it goes out. If something reads a little off, thank you for your patience. Just reply and we'll make it right. We're growing with technology the same way we help our practices grow.",
+            AI_TEXT,
             "",
-            "CONFIDENTIALITY NOTICE: This email and any attachments are intended only for the named recipient(s) and may contain confidential, privileged, or protected health information (PHI) protected under HIPAA and other applicable federal and state law. If you received this message in error, please notify the sender immediately by reply email or at info@advanceapractice.com, then permanently delete or destroy all copies, including attachments and printouts. Any unauthorized review, use, disclosure, copying, or distribution is strictly prohibited.",
+            CONF_TEXT,
           ].filter(function (line, i) { return line !== "" || i > 4; }).join("\n");
         }
 
@@ -210,9 +242,15 @@
           flash.t = setTimeout(function () { status.textContent = ""; }, 4000);
         }
 
-        function selectionFallback() {
+        function selectionFallback(noticesOnly) {
           var range = document.createRange();
-          range.selectNodeContents(sig);
+          var rows = sig.querySelectorAll("table > tbody > tr, table > tr");
+          if (noticesOnly && rows.length > 1) {
+            range.setStartBefore(rows[1]);
+            range.setEndAfter(rows[rows.length - 1]);
+          } else {
+            range.selectNodeContents(sig);
+          }
           var sel = window.getSelection();
           sel.removeAllRanges();
           sel.addRange(range);
@@ -222,9 +260,12 @@
           return ok;
         }
 
-        async function copyRich() {
-          var html = cleanHtml();
-          var text = plainText();
+        async function copyRich(noticesOnly) {
+          var html = cleanHtml(noticesOnly);
+          var text = plainText(noticesOnly);
+          var done = noticesOnly
+            ? "Notices copied. Paste them on a new line right below your signature."
+            : "Signature copied. Paste it into your email signature settings.";
           try {
             if (navigator.clipboard && window.ClipboardItem) {
               await navigator.clipboard.write([
@@ -233,12 +274,12 @@
                   "text/plain": new Blob([text], { type: "text/plain" }),
                 }),
               ]);
-              flash("Signature copied. Paste it into your email signature settings.");
+              flash(done);
               return;
             }
           } catch (e) { /* fall through */ }
-          flash(selectionFallback()
-            ? "Signature copied. Paste it into your email signature settings."
+          flash(selectionFallback(noticesOnly)
+            ? done
             : "Couldn't copy automatically. Select the preview and press Ctrl/Cmd+C.");
         }
 
@@ -262,7 +303,8 @@
         Object.keys(inputs).forEach(function (k) {
           inputs[k].addEventListener("input", function () { render(); save(); });
         });
-        document.getElementById("copy-rich").addEventListener("click", copyRich);
+        document.getElementById("copy-rich").addEventListener("click", function () { copyRich(false); });
+        document.getElementById("copy-notices").addEventListener("click", function () { copyRich(true); });
         document.getElementById("copy-text").addEventListener("click", copyText);
         load();
         render();
